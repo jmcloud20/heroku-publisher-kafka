@@ -2,10 +2,7 @@ package com.pccw.cloud.producerapp.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pccw.cloud.producerapp.service.KafkaProducerService;
-import com.pccw.cloud.producerapp.web.model.CustomerUpdateEmailDto;
 import com.pccw.cloud.producerapp.web.model.MessageDto;
-import com.pccw.cloud.producerapp.web.model.OptDto;
-import com.pccw.cloud.producerapp.web.model.ProductOfferDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,6 +15,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.Date;
+import java.util.Map;
 
 @RequestMapping("/api/v1/producer")
 @RestController
@@ -37,8 +35,7 @@ public class ProducerController {
     @PostMapping("/CUST_optOut_optIn")
     @ResponseStatus(HttpStatus.CREATED)
     public void customerOpt(@RequestBody MessageDto messageDto) throws IOException, URISyntaxException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
-        OptDto optDto = (OptDto) messageDto.getMessage();
-        optDto.setPublishTime(new Date().getTime());
+        this.setPublishTime((Map<String, Object>) messageDto.getMessage());
         this.produce(messageDto.getTopic(), messageDto);
         log.info("Message Received: " + messageDto);
     }
@@ -46,8 +43,7 @@ public class ProducerController {
     @PostMapping("/cust_update_email")
     @ResponseStatus(HttpStatus.CREATED)
     public void updateEmail(@RequestBody MessageDto messageDto) throws IOException, URISyntaxException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
-        CustomerUpdateEmailDto customerUpdateEmailDto = (CustomerUpdateEmailDto) messageDto.getMessage();
-        customerUpdateEmailDto.setPublishTime(new Date().getTime());
+        this.setPublishTime((Map<String, Object>) messageDto.getMessage());
         this.produce(messageDto.getTopic(), messageDto);
         log.info("Message Received: " + messageDto);
     }
@@ -55,10 +51,14 @@ public class ProducerController {
     @PostMapping("/prod_offer")
     @ResponseStatus(HttpStatus.CREATED)
     public void productOffer(@RequestBody MessageDto messageDto) throws URISyntaxException, CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
-        ProductOfferDto productOfferDto = (ProductOfferDto) messageDto.getMessage();
-        productOfferDto.setPublishTime(new Date().getTime());
+        this.setPublishTime((Map<String, Object>) messageDto.getMessage());
         this.produce(messageDto.getTopic(), messageDto);
         log.info("Message Received: " + messageDto);
+    }
+
+    private void setPublishTime(Map<String, Object> messageMap) {
+        messageMap.put("publishTime", new Date().getTime());
+
     }
 
     private void produce(String topic, MessageDto messageDto) throws IOException, URISyntaxException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
