@@ -78,15 +78,19 @@ public class DefaultConfig {
         properties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, SSL);
         properties.put(SSL_ALGORITHM, "");
 
+        String deployEnv = certificateProvider.getDeployEnv();
+
         File trustStore = certificateProvider.getTruststore();
         File keyStore = certificateProvider.getKeystore();
 
         properties.put(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG, CertificateProvider.filetype);
         properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, trustStore.getAbsolutePath());
-        properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, certificateProvider.getPassword());
+        properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, deployEnv.equalsIgnoreCase("cloud") ?
+                certificateProvider.getEnvTrustStore().password() : certificateProvider.getPassword());
         properties.put(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG, CertificateProvider.filetype);
         properties.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, keyStore.getAbsolutePath());
-        properties.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, certificateProvider.getPassword());
+        properties.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, deployEnv.equalsIgnoreCase("cloud") ?
+                certificateProvider.getEnvKeyStore().password() : certificateProvider.getPassword());
     }
 
 

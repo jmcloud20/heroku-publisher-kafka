@@ -42,6 +42,7 @@ class DefaultConfigTest {
         Mockito.when(certificateProvider.getTruststore()).thenReturn(trustStore);
         Mockito.when(certificateProvider.getKeystore()).thenReturn(keystore);
         Mockito.when(certificateProvider.getPassword()).thenReturn("kafkapass");
+        Mockito.when(certificateProvider.getDeployEnv()).thenReturn("");
 
     }
 

@@ -9,6 +9,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.File;
+import java.io.IOException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,7 +24,8 @@ class CertificateProviderTest {
     String allowablePassword = "kafkapass";
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+        certificateProvider.setDeployEnv("");
         certificateProvider.init();
     }
 
