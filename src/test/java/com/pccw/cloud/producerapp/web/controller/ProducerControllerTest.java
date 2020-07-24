@@ -1,6 +1,7 @@
 package com.pccw.cloud.producerapp.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pccw.cloud.producerapp.service.KafkaProducerService;
 import com.pccw.cloud.producerapp.web.model.CustomerUpdateEmailDto;
 import com.pccw.cloud.producerapp.web.model.MessageDto;
 import com.pccw.cloud.producerapp.web.model.OptDto;
@@ -8,21 +9,34 @@ import com.pccw.cloud.producerapp.web.model.ProductOfferDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.util.Assert;
 
+import java.io.File;
+import java.io.IOException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.Date;
 
+import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ProducerController.class)
 class ProducerControllerTest {
-@Autowired
-MockMvc mockMvc;
 
-@Autowired
+    @MockBean
+    KafkaProducerService kafkaProducerService;
+
+    @Autowired
+    MockMvc mockMvc;
+
+    @Autowired
     ObjectMapper objectMapper;
+
 
     @Test
     void customerOpt() throws Exception {
@@ -42,7 +56,30 @@ MockMvc mockMvc;
                 .message(optDto)
                 .build();
 
-        performMock(messageDto, "/api/v1/producer/CUST_optOut_optIn");
+        String messageDtoJson = objectMapper.writeValueAsString(messageDto);
+
+        this.performMock(messageDto, "/api/v1/producer/CUST_optOut_optIn");
+
+        then(kafkaProducerService).should().produce(messageDto.getTopic(), messageDtoJson);
+    }
+
+    @Test
+    public void testRandom() throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
+        ClassLoader classLoader = new ProducerControllerTest().getClass().getClassLoader();
+        String filename = "security/keystore.jks";
+        File file = new File(classLoader.getResource(filename).getFile());
+
+        Assert.notNull(file, "keystore file does not exist.");
+//        EnvKeyStore envTrustStore = EnvKeyStore.createWithRandomPassword("KAFKA_TRUSTED_CERT");
+//        EnvKeyStore envKeyStore = EnvKeyStore.createWithRandomPassword("KAFKA_CLIENT_CERT","KAFKA_CLIENT_CERT_KEY");
+
+//        Reader reader = new StringReader(System.getenv("KAFKA_TRUSTED_CERT"));
+//        Reader reader = new FileReader(System.getenv("KAFKA_CLIENT_CERT_KEY"));
+//        PEMParser pemParser = new PEMParser(reader);
+//        X509Certificate certHolder = (X509Certificate) pemParser.readObject();
+//        PEMKeyPair pemKeyPair = (PEMKeyPair) pemParser.readObject();
+//        JcaPEMKeyConverter jcaPEMKeyConverter = new JcaPEMKeyConverter();
+//        StringReader certReader = new StringReader(System.getenv("KAFKA_CLIENT_CERT"));
     }
 
     @Test

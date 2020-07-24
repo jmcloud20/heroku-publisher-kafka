@@ -61,6 +61,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<!-- Purpose to be determined. -->
 		<dependency>
 			<groupId>org.springframework.kafka</groupId>
 			<artifactId>spring-kafka-test</artifactId>
