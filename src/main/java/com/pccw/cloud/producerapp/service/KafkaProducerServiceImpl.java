@@ -1,6 +1,5 @@
 package com.pccw.cloud.producerapp.service;
 
-import com.pccw.cloud.producerapp.service.heroku.kafka.DefaultConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -19,22 +18,17 @@ import java.util.Properties;
 @Primary
 public class KafkaProducerServiceImpl implements KafkaProducerService {
 
-    private final DefaultConfig defaultConfig;
+    private final KafkaProducer<String, String> kafkaProducer;
 
-    public KafkaProducerServiceImpl(DefaultConfig defaultConfig) {
-        this.defaultConfig = defaultConfig;
+    public KafkaProducerServiceImpl(KafkaProducer<String, String> kafkaProducer) {
+        this.kafkaProducer = kafkaProducer;
     }
 
     @Override
     public void produce(String topic, String message) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, URISyntaxException {
-        Properties properties = defaultConfig.getProperties();
-        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-
-        KafkaProducer<String, String> producer = new KafkaProducer<String, String>(properties);
 
         ProducerRecord<String, String> record = new ProducerRecord<>(topic, message);
-        producer.send(record, new Callback() {
+        kafkaProducer.send(record, new Callback() {
             @Override
             public void onCompletion(RecordMetadata recordMetadata, Exception e) {
                 //executes every time record is successfully sent or an exception is thrown.
@@ -49,8 +43,8 @@ public class KafkaProducerServiceImpl implements KafkaProducerService {
                 }
             }
         });
-        producer.flush();
-        producer.close();
+        kafkaProducer.flush();
+        kafkaProducer.close();
 
     }
 
