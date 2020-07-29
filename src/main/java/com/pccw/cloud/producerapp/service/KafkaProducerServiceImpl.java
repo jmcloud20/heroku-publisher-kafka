@@ -44,7 +44,6 @@ public class KafkaProducerServiceImpl implements KafkaProducerService {
             }
         });
         kafkaProducer.flush();
-        kafkaProducer.close();
 
     }
 
