@@ -30,7 +30,7 @@ public class ProducerController {
     public ProducerController(KafkaProducerService kafkaProducerService) {
         this.kafkaProducerService = kafkaProducerService;
     }
-    
+
     @PostMapping("/CUST_optOut_optIn")
     @ResponseStatus(HttpStatus.CREATED)
     public void customerOpt(@RequestBody MessageDto messageDto) throws IOException, URISyntaxException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
