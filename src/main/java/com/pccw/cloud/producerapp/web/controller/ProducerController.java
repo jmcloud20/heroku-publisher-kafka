@@ -31,12 +31,12 @@ public class ProducerController {
         this.kafkaProducerService = kafkaProducerService;
     }
 
-
     @PostMapping("/CUST_optOut_optIn")
     @ResponseStatus(HttpStatus.CREATED)
     public void customerOpt(@RequestBody MessageDto messageDto) throws IOException, URISyntaxException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
         this.setPublishTime((Map<String, Object>) messageDto.getMessage());
         this.produce(messageDto.getTopic(), messageDto);
+        this.produce("CustomerUpdate", messageDto);
         log.info("Message Received: " + messageDto);
     }
 
@@ -45,6 +45,7 @@ public class ProducerController {
     public void updateEmail(@RequestBody MessageDto messageDto) throws IOException, URISyntaxException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
         this.setPublishTime((Map<String, Object>) messageDto.getMessage());
         this.produce(messageDto.getTopic(), messageDto);
+        this.produce("CustomerUpdate", messageDto);
         log.info("Message Received: " + messageDto);
     }
 
@@ -53,6 +54,7 @@ public class ProducerController {
     public void productOffer(@RequestBody MessageDto messageDto) throws URISyntaxException, CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
         this.setPublishTime((Map<String, Object>) messageDto.getMessage());
         this.produce(messageDto.getTopic(), messageDto);
+        this.produce("CustomerUpdate", messageDto);
         log.info("Message Received: " + messageDto);
     }
 
