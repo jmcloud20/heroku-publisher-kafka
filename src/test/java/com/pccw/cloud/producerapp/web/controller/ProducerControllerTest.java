@@ -22,7 +22,8 @@ import java.security.cert.CertificateException;
 import java.util.Date;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -58,12 +59,8 @@ class ProducerControllerTest {
                 .build();
 
         String messageDtoJson = objectMapper.writeValueAsString(messageDto);
-
-
         this.performMock(messageDto, "/api/v1/producer/CUST_optOut_optIn");
-
-
-        then(kafkaProducerService).should().produce(any(), any());
+        verify(kafkaProducerService, times(2)).produce(any(), any());
     }
 
     @Test
